@@ -1,0 +1,58 @@
+@CHARSET "UTF-8";
+
+* {
+	box-sizing: border-box;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+}
+
+html { 
+	height: 100%;
+}
+
+html {
+	background: #eee;
+}
+
+#registro {
+	font-size: 20px;
+	width: 450px;
+	margin:auto;
+	padding: 30px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	-khtml-border-radius: 10px;
+	background: #fff;
+}
+
+#registro label {
+	text-align: left;
+	width: 200px;
+	line-height: 30px;
+	padding-top: 2px;
+	float:left;
+}
+
+#registro input {
+	font-size: 20px;
+}
+
+#registro input[type='submit'] {
+	width: 200px;
+	font-size: 30px;
+	margin: 30px auto;
+	border: 1px solid #fff;
+}
+
+#registro .submit {
+	margin: 0 auto;
+	width: 200px;
+}
+
+#registro .error {
+	color: red;
+	text-align: center;
+	margin-bottom: 20px;
+}

@@ -11,6 +11,9 @@
  * @package CMS/admin
  * @category
  *
+ * @link ../includes/config.php - Archivo de variables de configuracion.
+ * @link ../includes/funciones.php - Conjunto de funciones standard.
+ * @link ../includes/variables.php - Inicializacion de las variables.
  */
 
 /*
@@ -26,29 +29,44 @@
  * totalHorasPerdidasAqui = 1
  *
  */
-
-
-$nombre = '';
-$usuario = '';
-$email = '';
+include '../includes/config.php';
+include '../includes/funciones.php';
+include '../includes/variables.php';
 
 // Llamamos a la variable global que maneja la base de datos
 global $db;
 
+$nombre = iniVarForm ('nombre');
+$usuario = iniVarForm ('usuario');
+$contrasena = iniVarForm ('contrasena');
+$email = iniVarForm ('email');
+
 if ($_POST)
 {
-	$nombre = $db->real_escape_string ($_POST['nombre']);
-	$usuario = $db->real_escape_string ($_POST['usuario']);
-	$contrasena = $db->real_escape_string ($_POST['contrasena']);
-	$email = $db->real_escape_string ($_POST['email']);
-	
 	if ($nombre == "" or $usuario == "" or $contrasena == "" or $email == "")
 	{
 		$mensaje = sprintf ("Hay algún campo vacío");
 	}
 	else
 	{
-		include '../includes/config.php';
+		
+		// print_r (" * ");
+		// print_r ($nombre);
+		// print_r (" - ");
+		// print_r (" * ");
+		// print_r ($usuario);
+		// print_r (" - ");
+		// print_r (" * ");
+		// print_r ($contrasena);
+		// print_r (" - ");
+		// print_r (" * ");
+		// print_r ($email);
+		// print_r (" - ");
+		
+		$nombre = $db->real_escape_string ($nombre);
+		$usuario = $db->real_escape_string ($usuario);
+		$contrasena = $db->real_escape_string ($contrasena);
+		$email = $db->real_escape_string ($email);
 		
 		$sql = sprintf ("INSERT INTO usuarios VALUES (NULL,'$nombre','$usuario', md5('$contrasena'), '$email')");
 		
@@ -71,7 +89,7 @@ if ($_POST)
 </head>
 <body>
 	<div id="registro">
-    	<?php if ($mensaje) { ?>
+    	<?php if (isset($mensaje)) { ?>
         <div class="error">
             <?php echo $mensaje?>
         </div>

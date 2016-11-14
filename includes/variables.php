@@ -37,5 +37,5 @@ $usuario = '';
 $contrasena = '';
 $email = '';
 
-
+$mensaje = '';
 ?>

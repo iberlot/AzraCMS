@@ -14,6 +14,7 @@
  * @link ../includes/config.php - Archivo de variables de configuracion.
  * @link ../includes/funciones.php - Conjunto de funciones standard.
  * @link ../includes/variables.php - Inicializacion de las variables.
+ * 
  */
 
 /*
@@ -29,40 +30,30 @@
  * totalHorasPerdidasAqui = 1
  *
  */
-include '../includes/config.php';
-include '../includes/funciones.php';
-include '../includes/variables.php';
 
-// Llamamos a la variable global que maneja la base de datos
-global $db;
+include '../admin/cabecera.php';
 
-$nombre = iniVarForm ('nombre');
-$usuario = iniVarForm ('usuario');
-$contrasena = iniVarForm ('contrasena');
-$email = iniVarForm ('email');
+// include '../includes/config.php';
+// include '../includes/funciones.php';
+// include '../includes/variables.php';
+
+// // Llamamos a la variable global que maneja la base de datos
+// global $db;
 
 if ($_POST)
 {
+	
+	$nombre = iniVarForm ('nombre');
+	$usuario = iniVarForm ('usuario');
+	$contrasena = iniVarForm ('contrasena');
+	$email = iniVarForm ('email');
+	
 	if ($nombre == "" or $usuario == "" or $contrasena == "" or $email == "")
 	{
 		$mensaje = sprintf ("Hay algún campo vacío");
 	}
 	else
 	{
-		
-		// print_r (" * ");
-		// print_r ($nombre);
-		// print_r (" - ");
-		// print_r (" * ");
-		// print_r ($usuario);
-		// print_r (" - ");
-		// print_r (" * ");
-		// print_r ($contrasena);
-		// print_r (" - ");
-		// print_r (" * ");
-		// print_r ($email);
-		// print_r (" - ");
-		
 		$nombre = $db->real_escape_string ($nombre);
 		$usuario = $db->real_escape_string ($usuario);
 		$contrasena = $db->real_escape_string ($contrasena);
@@ -82,11 +73,11 @@ if ($_POST)
 
 
 <html>
-<head>
-<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
-<link rel="stylesheet" type="text/css" href="../estilos/estilo.css" />
+<!-- <head> -->
+<!-- <meta http-equiv='Content-Type' content='text/html; charset=utf-8'> -->
+<!-- <link rel="stylesheet" type="text/css" href="../estilos/estilo.css" /> --> 
 
-</head>
+<!-- </head> -->
 <body>
 	<div id="registro">
     	<?php if (isset($mensaje)) { ?>

@@ -5,12 +5,16 @@
  * @author iberlot <@> ivanberlot@gmail.com
  * @todo FechaC 10/11/2016 - Lenguaje PHP
  *      
- * @todo
+ * @todo Modulo de acceso a la seccion de admin
  *
  * @version 0.1 - Version de inicio
  * @package CMS/admin
- * @category
+ * @category Login
  *
+ * @link ../includes/config.php - Archivo de variables de configuracion.
+ * @link ../includes/funciones.php - Conjunto de funciones standard.
+ * @link ../includes/variables.php - Inicializacion de las variables.
+ *      
  */
 
 /*
@@ -27,41 +31,50 @@
  *
  */
 
+include '../includes/config.php';
+include '../includes/funciones.php';
+include '../includes/variables.php';
+
+// Llamamos a la variable global que maneja la base de datos
+global $db;
 
 session_start ();
 
-
 if ($_POST)
 {
-	$usuario = $_POST['usuario'];
-	$contrasena = $_POST['contrasena'];
+	$usuario = iniVarForm ('usuario');
+	$contrasena = iniVarForm ('contrasena');
 	
-	include '../includes/config.php';
-
-	global $db;
-	
-	$sql = sprintf ("INSERT INTO usuarios VALUES (NULL,'$nombre','$usuario', md5('$contrasena'), '$email')");
-	
-	$sql = sprintf ("SELECT id FROM usuarios WHERE usuario = '%s' and contrasena =  '%s'", mysql_real_escape_string ($username), mysql_real_escape_string (md5 ($contrasena)));
-	
-	$res = $db->query ($sql);
-	
-	if (! $res)
+	if ($usuario == "" or $contrasena == "" )
 	{
-		die ('Invalid query: ' . $db->error ());
-	}										
-	
-	list ($count) = $db->fetch_array ($res);
-	
-	if (!$count)
-	{
-		$mensaje = sprintf ("Usuario o contraseña equivocados");
+		$mensaje = sprintf ("Hay algún campo vacío");
 	}
 	else
 	{
-		$_SESSION['entrado'] = true;
-		$_SESSION['id'] = $count;
-		header ('Location:index.php');
+		$usuario = $db->real_escape_string ($usuario);
+		$contrasena = $db->real_escape_string ($contrasena);
+		
+		$sql = sprintf ("SELECT id FROM usuarios WHERE usuario = '%s' and contrasena =  '%s'", $usuario, md5 ($contrasena));
+		
+		$res = $db->query ($sql);
+		
+		if (!$res)
+		{
+			die ('Invalid query: ' . $db->error ());
+		}
+		
+		list ($count) = $db->fetch_array ($res);
+		
+		if (!$count)
+		{
+			$mensaje = sprintf ("Usuario o contraseña equivocados");
+		}
+		else
+		{
+			$_SESSION['entrado'] = true;
+			$_SESSION['id'] = $count;
+			header ('Location:index.php');
+		}
 	}
 }
 ?>
@@ -92,6 +105,5 @@ if ($_POST)
 			</div>
 		</form>
 	</div>
-
 </body>
 </html>

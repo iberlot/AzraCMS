@@ -3,12 +3,14 @@
 /**
  * 
  * @author iberlot <@> ivanberlot@gmail.com
- * @todo FechaC 10/11/2016 - Lenguaje PHP 
+ * @todo FechaC 14/11/2016 - Lenguaje PHP 
  * 
- * @todo 
- * @version 0.1	- Version de inicio 
- * @package CMS
- * @category 
+ * @todo variables.php
+ *
+ * @todo Inicializacion de las variables usadas por el sistema
+ * @version 0.1 - Version de inicio 
+ * @package CMS/includes
+ * @category Basics
  */
 
 /*
@@ -25,8 +27,15 @@
  *
  */
 
+/**
+ * Nombre de asociado a la cuenta del administrador
+ */
+$nombre = '';
 
 
+$usuario = '';
+$contrasena = '';
+$email = '';
 
-
+$mensaje = '';
 ?>

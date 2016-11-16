@@ -99,8 +99,23 @@ a {
 	color: #eee;
 }
 
+.escritura input {
+    background:none;
+    line-height:40px;
+    width:100%;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
 
-
+.escritura .actualizar, .escritura .publicar {
+    background: #444444;
+    padding:10px;
+    cursor:pointer;
+    color: #fff;
+    text-align:center;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
 
 
 

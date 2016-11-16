@@ -32,7 +32,7 @@
 
 session_start();
 
-if (!$_SESSION['id']) 
+if (!isset($_SESSION['id']))
 {
 	header('Location:entrada.php');
 }
@@ -40,16 +40,16 @@ else
 {
 	$id = $_SESSION['id'];
 
-	include '../includes/config.php';
-	include '../includes/funciones.php';
-	include '../includes/variables.php';
+	require_once '../includes/config.php';
+	require_once '../includes/funciones.php';
+	require_once '../includes/variables.php';
 	
 	// Llamamos a la variable global que maneja la base de datos
 	global $db;
 	
 	session_start ();
 	
-	include '../admin/menu.php';
+	require_once '../admin/menu.php';
 	
 }
 

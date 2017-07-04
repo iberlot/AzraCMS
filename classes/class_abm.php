@@ -1211,32 +1211,32 @@ class class_abm
 											$idVal = $db->insert_id($this->campoId, $this->tabla . insert_id);
 											$idVal = $idVal + 1;
 											
-											$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . $idVal . "' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+											$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . $idVal . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										}
 										else
 										{
-											$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']]) != "" ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+											$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										}
 										break;
 										
 									case "moneda" :
-										$imprForm .= "<input type='number' class='currency' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']]) != "" ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='number' class='currency' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "numero" :
-										$imprForm .= "<input type='number' class='currency' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']]) != "" ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='number' class='currency' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "password" :
-										$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']]) != "" ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "textarea" :
-										$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-textarea $requerido' " . ((isset($campo['maxLen']) and $campo['maxLen']) > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']]) != "" ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "</textarea>\n";
+										$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-textarea $requerido' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "</textarea>\n";
 										break;
 										
 									case "dbCombo" :
-										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . ((isset($campo['hint']) and $campo['hint']) != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
+										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 										if($campo[incluirOpcionVacia])
 										{
 											$imprForm .= "<option value=''></option> \n";
@@ -1287,7 +1287,7 @@ class class_abm
 									case "bit" :
 										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 										
-										if($campo[ordenInversoBit])
+										if(isset($campo[ordenInversoBit]))
 										{
 											if((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] == false) or $campo['valorPredefinido'] == false)
 											{
@@ -1456,7 +1456,7 @@ class class_abm
 								}
 								else
 								{
-									$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . "  " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+									$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr value='" . ((isset($_POST[$campo['campo']]) and $_POST[$campo['campo']] != "") ? $_POST[$campo['campo']] : $campo['valorPredefinido']) . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " class='input-text $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . "  " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 								}
 								break;
 								
@@ -1510,7 +1510,7 @@ class class_abm
 								break;
 								
 							case "combo" :
-								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . " \n";
+								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . " \n";
 								if(isset($campo['incluirOpcionVacia']))
 								{
 									$imprForm .= "<option value=''></option> \n";
@@ -1532,7 +1532,7 @@ class class_abm
 								break;
 								
 							case "bit" :
-								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . " \n";
+								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . " \n";
 								
 								if($campo[ordenInversoBit])
 								{
@@ -1978,23 +1978,23 @@ class class_abm
 								switch($campo['tipo'])
 								{
 									case "texto" :
-										$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "moneda" :
-										$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "numero" :
-										$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "password" :
-										$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									case "textarea" :
-										$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled class='input-textarea $requerido' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . $fila[$campo['campo']] . "</textarea>\n";
+										$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled class='input-textarea $requerido' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . $fila[$campo['campo']] . "</textarea>\n";
 										break;
 										
 									case "dbCombo" :
@@ -2036,7 +2036,7 @@ class class_abm
 										break;
 										
 									case "combo" :
-										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
+										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 										if($campo['incluirOpcionVacia'])
 										{
 											$imprForm .= "<option value=''></option> \n";
@@ -2058,7 +2058,7 @@ class class_abm
 										break;
 										
 									case "bit" :
-										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
+										$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 										
 										if($campo['ordenInversoBit'])
 										{
@@ -2124,11 +2124,11 @@ class class_abm
 										
 										$imprForm .= $jsTmp;
 										$imprForm .= "<input type='text' style='position:absolute' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' value='" . ($fila[$campo['campo']] != "" ? $fila[$campo['campo']] : $campo['valorPredefinido']) . "'/> \n";
-										$imprForm .= "<input type='text' style='position:relative;top:0px;left;0px'  $autofocusAttr name='display_" . $campo['campo'] . "' id='display_" . $campo['campo'] . "' class='input-fecha $requerido' $disabled " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput] readonly='readonly'/> \n";
+										$imprForm .= "<input type='text' style='position:relative;top:0px;left;0px'  $autofocusAttr name='display_" . $campo['campo'] . "' id='display_" . $campo['campo'] . "' class='input-fecha $requerido' $disabled " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput] readonly='readonly'/> \n";
 										break;
 										
 									case "upload" :
-										$imprForm .= "<input type='file' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='$requerido' " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+										$imprForm .= "<input type='file' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='$requerido' " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 										break;
 										
 									default :
@@ -2240,23 +2240,23 @@ class class_abm
 						switch($campo['tipo'])
 						{
 							case "texto" :
-								$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+								$imprForm .= "<input type='text' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 								break;
 								
 							case "moneda" :
-								$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+								$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 								break;
 								
 							case "numero" :
-								$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+								$imprForm .= "<input type='number' class='input-text $requerido currency' step='0.01' min='0.01' max='250000000.00'  name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 								break;
 								
 							case "password" :
-								$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
+								$imprForm .= "<input type='password' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-text $requerido' $disabled value='" . $fila[$campo['campo']] . "' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (($campo['campo'] == $this->campoId and !$this->campoIdEsEditable) ? "readonly='readonly' disabled='disabled'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") . "/> \n";
 								break;
 								
 							case "textarea" :
-								$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled class='input-textarea $requerido' " . (isset($campo['maxLen']) and $campo['maxLen'] > 0 ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . $fila[$campo['campo']] . "</textarea>\n";
+								$imprForm .= "<textarea name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr $disabled class='input-textarea $requerido' " . ((isset($campo['maxLen']) and $campo['maxLen'] > 0) ? "maxlength='" . $campo['maxLen'] . "'" : "") . " " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]>" . $fila[$campo['campo']] . "</textarea>\n";
 								break;
 								
 							case "dbCombo" :
@@ -2305,30 +2305,13 @@ class class_abm
 								}
 								
 								$campoWere = "campoValor=" . $campo['campoValor'] . "&campoTexto=" . $campo['campoTexto'] . "&limitarTamanio=" . $campo['limitarTamaño'] . "&mensaje=" . $campo['mensaje'] . "&where=" . $campo['where'] . "&tabla=" . $campo['tabla'] . "&campoValor=" . $campo['campoValor'] . "&incluirValor=" . $campo['incluirValor'] . "&campo=" . $campo['campo'] . "&campoPadre=\"+$(\"#" . $campo['campoPadre'] . "\").val()";
-								/*
-								 * &campoValor=IDMODULO
-								 * &campoTexto=TITULO
-								 * &limitarTamanio=50
-								 * &mensaje=seleccione
-								 * &where=idaplicacion = " . $_POST ["IDAPLICACION"] . " AND agrupa = 0
-								 * &tabla=APPADMUSU.MODULO
-								 * &campoValor=IDMODULO
-								 * &incluirValor=1
-								 * &campo=PADRE
-								 *
-								 * "IDAPLICACION="+$("#apliRela").val(),
-								 */
-								
-								// print_r ($campoWere);
 								
 								$jsSelDin = str_replace('%CAMPO%', $campo['campo'], $this->jsIniciadorSelectDinamico);
 								$jsSelDin = str_replace('%CAMPOPADRE%', $campo['campoPadre'], $jsSelDin);
 								$jsSelDin = str_replace('%DIREDINAMIC%', $this->direDinamic, $jsSelDin);
-								// $jsSelDin = str_replace ('%WHERE%', 'IDAPLICACION="+$("#IDAPLICACION").val()+"'.$campoWere.'"', $jsSelDin);
 								$jsSelDin = str_replace('%WHERE%', $campoWere, $jsSelDin);
 								$jsSelDin = str_replace('%WHEREINI%', $campo['campo'], $jsSelDin);
 								
-								// print_r ("XXX");
 								$sqlQuery = $campo['sqlQuery'];
 								
 								if($campo['customCompare'] != "")
@@ -2365,7 +2348,7 @@ class class_abm
 								break;
 								
 							case "combo" :
-								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
+								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 								if($campo[incluirOpcionVacia])
 								{
 									$imprForm .= "<option value=''></option> \n";
@@ -2387,7 +2370,7 @@ class class_abm
 								break;
 								
 							case "bit" :
-								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
+								$imprForm .= "<select name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' $autofocusAttr class='input-select $requerido' $disabled " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " $campo[adicionalInput]> \n";
 								
 								if($campo[ordenInversoBit])
 								{
@@ -2453,7 +2436,7 @@ class class_abm
 								
 								$imprForm .= $jsTmp;
 								$imprForm .= "<input type='text' style='position:absolute' name='" . $campo['campo'] . "' id='" . $campo['campo'] . "' value='" . ($fila[$campo['campo']] != "" ? $fila[$campo['campo']] : (isset($campo['valorPredefinido']) ? $campo['valorPredefinido'] : " " )) . "'/> \n";
-								$imprForm .= "<input type='text' style='position:relative;top:0px;left;0px'  ".$autofocusAttr." name='display_" . $campo['campo'] . "' id='display_" . $campo['campo'] . "' class='input-fecha ".$requerido."' ".$disabled." " . (isset($campo['hint']) and $campo['hint'] != "" ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") ."readonly='readonly'/> \n";
+								$imprForm .= "<input type='text' style='position:relative;top:0px;left;0px'  ".$autofocusAttr." name='display_" . $campo['campo'] . "' id='display_" . $campo['campo'] . "' class='input-fecha ".$requerido."' ".$disabled." " . ((isset($campo['hint']) and $campo['hint'] != "") ? 'title="' . $campo['hint'] . '"' : "") . " " . (isset($campo['adicionalInput']) ? $campo['adicionalInput'] : "") ."readonly='readonly'/> \n";
 								break;
 								
 							case "upload" :
@@ -3606,7 +3589,7 @@ class class_abm
 					
 					if($campo['campo'] == "" or isset($campo['noOrdenar']))
 					{
-						echo "<th " . ($styleTh != "" ? "style='$styleTh'" : "") . ">" . ((isset($campo['tituloListado']) and $campo['tituloListado']) != "" ? $campo['tituloListado'] : ($campo['titulo'] != '' ? $campo['titulo'] : $campo['campo'])) . "</th> \n";
+						echo "<th " . ($styleTh != "" ? "style='$styleTh'" : "") . ">" . ((isset($campo['tituloListado']) and $campo['tituloListado'] != "") ? $campo['tituloListado'] : ($campo['titulo'] != '' ? $campo['titulo'] : $campo['campo'])) . "</th> \n";
 					}
 					else
 					{
@@ -3727,11 +3710,6 @@ class class_abm
 					
 					if(isset($campo['customEvalListado']) and ($campo['customEvalListado'] != ""))
 					{
-						/*
-						 * echo "-|";
-						 * print_r($campo['campo']);
-						 * echo "|-";
-						 */
 						$id = $fila['ID'];
 						
 						extract($GLOBALS);
@@ -3823,11 +3801,6 @@ class class_abm
 						{
 							if($fila[$campo['campo']]!= "" and $fila[$campo['campo']] > 0)
 							{
-								// 							print_r(number_format($fila[$campo['campo']], $campo['cantidadDecimales'], ',', '.'));
-								// 							print_r("<Br />");
-								// 							print_r("number_format(".$fila[$campo['campo']].", ".$campo['cantidadDecimales'].", ',', '.')");
-								// 							print_r("<Br />");
-								
 								echo "<td style='text-align: right;'>$spanColorear" . number_format($fila[$campo['campo']], $campo['cantidadDecimales'], ',', '.') . "$spanColorearFin</td> \n";
 							}
 							else
@@ -4061,6 +4034,11 @@ class class_abm
 		}
 	}
 	
+	/**
+	 * Procesa los datos del formulario de alta para realizar la insercion
+	 *
+	 * @return void|string En caso de haber algun problema devuelve un error
+	 */
 	private function dbRealizarAlta()
 	{
 		global $db;
@@ -4272,10 +4250,6 @@ class class_abm
 				
 				if($hayID == false)
 				{
-					print_r("***".$camposSql);
-					
-					print_r("***".$valoresSql);
-					
 					$camposSql .= $this->campoId;
 					
 					$idVal = $db->insert_id($this->campoId, $this->tabla . insert_id);
@@ -4623,9 +4597,7 @@ class class_abm
 	{
 		$args = func_get_args();
 		$text = array_shift($args);
-		$tags = func_num_args() > 2 ? array_diff($args, array (
-				$text
-		)) : (array) $tags;
+		$tags = func_num_args() > 2 ? array_diff($args, array($text)) : (array) $tags;
 		foreach($tags as $tag)
 		{
 			while(preg_match('/<' . $tag . '(|\W[^>]*)>(.*)<\/' . $tag . '>/iusU', $text, $found))

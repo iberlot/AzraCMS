@@ -1,21 +1,21 @@
 <?php
 
 /**
- Class para el paginado de registros.
- Realiza de forma eficiente la consulta a BD para contar la cantidad de registros
- y traer solo los necesarios. Imprime el paginador con Anterior Siguiente y los numeros de paginas.
- 
- USAR:
- include("class_paginado.php");
- $paginado = new class_paginado;
- $paginado->registros_por_pagina = 20;
- $result = $paginado->query($query);
- 
+ * Class para el paginado de registros.
+ * Realiza de forma eficiente la consulta a BD para contar la cantidad de registros
+ * y traer solo los necesarios. Imprime el paginador con Anterior Siguiente y los numeros de paginas.
+ *
+ * USAR:
+ * include("class_paginado.php");
+ * $paginado = new class_paginado;
+ * $paginado->registros_por_pagina = 20;
+ * $result = $paginado->query($query);
+ *
  * @author Andres Carizza www.andrescarizza.com.ar
  * @author iberlot <@> ivanberlot@gmail.com
- * 
+ *
  * @version 3.6
- * Se actualizaron las funciones obsoletas y corrigieron algunos errores.
+ *          Se actualizaron las funciones obsoletas y corrigieron algunos errores.
  * @uses class_db
  */
 class class_paginado
@@ -144,7 +144,7 @@ class class_paginado
 	private $registro = 0;
 	private $desde_reg;
 	private $hasta_reg;
-
+	
 	/**
 	 * Ejecuta el query de mysql (que no debe tener LIMIT) que cuenta el total de registros
 	 * y el que retorna solo los registros que corresponden a la p&aacute;gina actual.
@@ -154,9 +154,9 @@ class class_paginado
 		global $db;
 		
 		$query = $sqlQuery;
-		if(isset($_GET [$this->nombre_var_registro]))
+		if(isset($_GET[$this->nombre_var_registro]))
 		{
-			$regist = $_GET [$this->nombre_var_registro];
+			$regist = $_GET[$this->nombre_var_registro];
 			
 			$this->registro = $regist; // es el numero de registro por el cual empieza
 		}
@@ -166,7 +166,7 @@ class class_paginado
 			$this->registro = 0;
 		}
 		
-		if (preg_match ('/[0-9]+$/', $this->registro))
+		if(preg_match('/[0-9]+$/', $this->registro))
 		{
 		}
 		else
@@ -179,40 +179,40 @@ class class_paginado
 		// Contar cuantos registros hay
 		// Transforma el query en un count y saca el ORDER BY, si existe, para que el query sea optimo en performance
 		// Si existe un GROUP BY ejecuta el original
-		if (! $this->ejecutarQueryOriginalParaContar and stripos ($query, "GROUP BY") === false)
+		if(!$this->ejecutarQueryOriginalParaContar and stripos($query, "GROUP BY") === false)
 		{
-			$queryCount = str_replace ("SELECT(.*)FROM", "SELECT count(*) as cantidad FROM", $query);
-			$queryCount = str_replace ("ORDER BY.*", "", $queryCount);
-			$result_paginado = $db->query ($queryCount);
+			$queryCount = str_replace("SELECT(.*)FROM", "SELECT count(*) as cantidad FROM", $query);
+			$queryCount = str_replace("ORDER BY.*", "", $queryCount);
+			$result_paginado = $db->query($queryCount);
 		}
 		else
 		{
 			$ejecutarQueryOriginal = true;
 		}
 		
-		if (isset($ejecutarQueryOriginal) or $db->num_rows ($result_paginado) > 1 or $db->num_rows ($result_paginado) == 0)
+		if(isset($ejecutarQueryOriginal) or $db->num_rows($result_paginado) > 1 or $db->num_rows($result_paginado) == 0)
 		{
 			// ejecuta el count mandando el query original
-			$result_paginado = $db->query ($sqlQuery);
-			$cantidad = $db->num_rows ($result_paginado);
+			$result_paginado = $db->query($sqlQuery);
+			$cantidad = $db->num_rows($result_paginado);
 		}
-		elseif ($db->num_rows ($result_paginado) == 1)
+		elseif($db->num_rows($result_paginado) == 1)
 		{
-			$cantidad = $db->result ($result_paginado, 0, "cantidad");
+			$cantidad = $db->result($result_paginado, 0, "cantidad");
 		}
 		$this->total_registros = $cantidad;
 		
 		// Ejecutar el query original con el LIMIT
-		if ($db->dbtype == 'mysql')
+		if($db->dbtype == 'mysql')
 		{
 			$query .= " LIMIT $this->registro, $this->registros_por_pagina";
 		}
-		elseif ($db->dbtype == 'oracle')
+		elseif($db->dbtype == 'oracle')
 		{
 			$registros_por_pagina = $this->registros_por_pagina;
 			$registro = $this->registro;
 			
-			$RegistroHasta = $registros_por_pagina+$registro;
+			$RegistroHasta = $registros_por_pagina + $registro;
 			
 			$query = "
 			SELECT * FROM (
@@ -220,15 +220,14 @@ class class_paginado
 			)
 			CONSULTA
 			)
-			WHERE FILA > " . $registro . " AND FILA <= " .  $RegistroHasta;
-				
+			WHERE FILA > " . $registro . " AND FILA <= " . $RegistroHasta;
 		}
-		$result = $db->query ($query);
+		$result = $db->query($query);
 		
-		$this->pagina = ceil ($this->registro / $this->registros_por_pagina) + 1;
-		$this->total_paginas = ceil ($this->total_registros / $this->registros_por_pagina);
+		$this->pagina = ceil($this->registro / $this->registros_por_pagina) + 1;
+		$this->total_paginas = ceil($this->total_registros / $this->registros_por_pagina);
 		
-		if (($this->registro + $this->registros_por_pagina) > $this->total_registros)
+		if(($this->registro + $this->registros_por_pagina) > $this->total_registros)
 		{
 			$this->hasta_reg = $this->total_registros;
 		}
@@ -238,16 +237,18 @@ class class_paginado
 		}
 		return $result;
 	}
-
+	
 	/**
 	 * Retorna el HTML del paginado
 	 */
 	function get_paginado()
 	{
+		$r = "";
+		
 		// cuando no hay links de paginado y cuando mostrarTotalRegistros = true
-		if ($this->total_registros <= $this->registros_por_pagina)
+		if($this->total_registros <= $this->registros_por_pagina)
 		{
-			if ($this->mostrarTotalRegistros)
+			if($this->mostrarTotalRegistros)
 			{
 				if(!isset($r))
 				{
@@ -263,31 +264,31 @@ class class_paginado
 		
 		$r .= "<div class='$this->cssClassPaginado'>";
 		
-		if ($this->mostrarPalabraPaginas)
+		if($this->mostrarPalabraPaginas)
 		{
 			$r .= $this->str_paginas . ": ";
 		}
 		
-		unset ($_GET [$this->nombre_var_registro]);
+		unset($_GET[$this->nombre_var_registro]);
 		
-		if (count ($this->variablesNoConservar) > 0)
+		if(count($this->variablesNoConservar) > 0)
 		{
-			for($i = 0; $i < count ($this->variablesNoConservar); $i ++)
+			for($i = 0; $i < count($this->variablesNoConservar); $i++)
 			{
-				unset ($_GET [$this->variablesNoConservar [$i]]);
+				unset($_GET[$this->variablesNoConservar[$i]]);
 			}
 		}
 		
-		$qs = http_build_query ($_GET); // conserva las variables que existian previamente
-		if ($qs != "")
+		$qs = http_build_query($_GET); // conserva las variables que existian previamente
+		if($qs != "")
 		{
 			$qs = "&" . $qs;
 		}
 		
-		if (($this->registro - $this->registros_por_pagina) >= 0)
+		if(($this->registro - $this->registros_por_pagina) >= 0)
 		{
 			// link primera pagina
-			if ($this->mostrar_ultima_primera_pagina and $this->registro - $this->registros_por_pagina > 0)
+			if($this->mostrar_ultima_primera_pagina and $this->registro - $this->registros_por_pagina > 0)
 			{
 				$r .= "<a href='$this->parent_self?" . $this->nombre_var_registro . "=0$qs' class='link_pri'>" . $this->primera . "</a> ";
 			}
@@ -297,14 +298,14 @@ class class_paginado
 		else
 		{
 			// link anterior deshabilitado
-			if ($this->mostrar_anterior_sigiente_inabilitado)
+			if($this->mostrar_anterior_sigiente_inabilitado)
 			{
 				$r .= "<span class='ant_desact'>" . $this->anterior_des . "</span> ";
 			}
 		}
 		
 		$link_pagina = $this->registro - ($this->registros_por_pagina * $this->cant_link_paginas_atras);
-		if ($link_pagina < 0)
+		if($link_pagina < 0)
 		{
 			$link_pagina = 0;
 		}
@@ -313,7 +314,7 @@ class class_paginado
 		{
 			$pagina = ((($i) * ($this->total_registros / $this->registros_por_pagina)) / $this->total_registros) + 1; // regla de tres simple...
 			
-			if ($this->registro == $i)
+			if($this->registro == $i)
 			{
 				// pagina actual
 				$r .= "<span class='link_pagina_actual'>$pagina</span> ";
@@ -324,17 +325,25 @@ class class_paginado
 				$r .= "<a href='$this->parent_self?" . $this->nombre_var_registro . "=" . $i . "$qs' title='" . $this->str_ir_a . " $pagina' class='link_pagina'>" . $pagina . "</a> ";
 			}
 			
-			if ($i > $this->registro)
+			if($i > $this->registro)
 			{ // si ya se paso link del numero de p&aacute;gina actual
-				$cant_adelante ++;
-				if ($cant_adelante >= $this->cant_link_paginas_adelante)
+				if(isset($cant_adelante))
+				{
+					$cant_adelante++;
+				}
+				else
+				{
+					$cant_adelante = 0;
+				}
+				
+				if($cant_adelante >= $this->cant_link_paginas_adelante)
 				{
 					break;
 				}
 			}
 		} // FIN for
 		
-		if (($this->registro + $this->registros_por_pagina) < $this->total_registros)
+		if(($this->registro + $this->registros_por_pagina) < $this->total_registros)
 		{
 			// link siguiente
 			$r .= "<a href='$this->parent_self?" . $this->nombre_var_registro . "=" . ($this->registro + $this->registros_por_pagina) . "$qs' class='link_sig'>" . $this->siguiente . "</a> ";
@@ -342,20 +351,20 @@ class class_paginado
 		else
 		{
 			// siguiente desactivado
-			if ($this->mostrar_anterior_sigiente_inabilitado)
+			if($this->mostrar_anterior_sigiente_inabilitado)
 			{
 				$r .= "<span class='sig_desact'>" . $this->siguiente_des . "</span>";
 			}
 		}
 		
 		// link ultima pagina
-		if ($this->mostrar_ultima_primera_pagina and (($this->registro + $this->registros_por_pagina) < $this->total_registros))
+		if($this->mostrar_ultima_primera_pagina and (($this->registro + $this->registros_por_pagina) < $this->total_registros))
 		{
-			$r .= "<a href='$this->parent_self?" . $this->nombre_var_registro . "=" . ($this->registros_por_pagina * (ceil ($this->total_registros / $this->registros_por_pagina) - 1)) . "$qs' class='link_ult'>" . $this->ultima . "</a> ";
+			$r .= "<a href='$this->parent_self?" . $this->nombre_var_registro . "=" . ($this->registros_por_pagina * (ceil($this->total_registros / $this->registros_por_pagina) - 1)) . "$qs' class='link_ult'>" . $this->ultima . "</a> ";
 		}
 		
 		// rotulo total registros
-		if ($this->mostrarTotalRegistros)
+		if($this->mostrarTotalRegistros)
 		{
 			$r .= "&nbsp;&nbsp; <span class='rotuloTotalRegistros'>" . $this->str_total . ": " . $this->total_registros . " " . ($this->total_registros > 1 ? $this->str_registros : $this->str_registro) . "</span>";
 		}
@@ -364,13 +373,13 @@ class class_paginado
 		
 		return $r;
 	}
-
+	
 	/**
 	 * Imprime el paginado
 	 */
 	function mostrar_paginado()
 	{
-		echo $this->get_paginado ();
+		echo $this->get_paginado();
 	} // FIN function mostrar_paginado
 } // FIN class_paginado
 ?>

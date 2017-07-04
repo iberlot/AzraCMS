@@ -2,10 +2,10 @@
 
 /**
  * Clase para manejar el ordenado por columnas de manera segura y facil
- * 
+ *
  * @author Andres Carizza www.andrescarizza.com.ar
  * @author iberlot <@> ivanberlot@gmail.com
- * 
+ *
  * @version 2.0
  * Se actualizaron las funciones obsoletas y corrigieron algunos errores.
  */
@@ -57,7 +57,7 @@ class class_orderby
 	private $orderByPorDefecto;
 	
 	private $orderBy;
-
+	
 	/**
 	 * Constructor
 	 *
@@ -75,13 +75,13 @@ class class_orderby
 		$this->variableOrderBy = $variableOrderBy;
 		$this->orderBy = $this->leerYguardarOrderBy ();
 	}
-
+	
 	private function leerYguardarOrderBy()
 	{
 		if (isset ($_GET [$this->variableOrderBy]) and trim ($_GET [$this->variableOrderBy]) != "")
 		{
 			$i = $_GET [$this->variableOrderBy];
-
+			
 			
 			if (array_key_exists ($i - 1, $this->arrayCamposOrder))
 			{
@@ -107,7 +107,7 @@ class class_orderby
 		}
 		return $orderBy;
 	}
-
+	
 	/**
 	 * Obtiene el order by para la consulta SQL.
 	 * Usar: "...ORDER BY ".$o->getOrderBy()
@@ -116,7 +116,7 @@ class class_orderby
 	{
 		return $this->orderBy;
 	}
-
+	
 	/**
 	 * Retorna el codigo HTML para poner un link para ordenar por columna y la flecha correspondiente.
 	 * Usar: <th><?=linkOrderBy("Usuario","user")?></th>
@@ -131,15 +131,15 @@ class class_orderby
 	{
 		
 		$keyCampo = array_search ($campo, $this->arrayCamposOrder);
-				
+		
 		/* Lo comento para que funcione correctamente el join
-		if ($keyCampo === false)
-		{
-			throw new Exception ("El campo $campo no esta definido en el constructor de la clase!   ");
-		}
-		*/
+		 if ($keyCampo === false)
+		 {
+		 throw new Exception ("El campo $campo no esta definido en el constructor de la clase!   ");
+		 }
+		 */
 		$keyCampo = $keyCampo + 1; // +1 para no usar el cero en el query string
-		                           
+		
 		// genera el query string de variables previamente existentes
 		$get = $_GET;
 		unset ($get [$this->variableOrderBy]);

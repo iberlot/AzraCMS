@@ -1,20 +1,24 @@
 <?php
+
 /**
  * Esta clase se va a encargar de todo lo referente a las bases de datos.
  * Recuperacion e insercion de datos, conexiones ect.
  *
  * @author iberlot <@> ivanberlot@gmail.com
- *        
- * @version 3.1
+ *
+ * @version 3.1.2
  *          (A partir de la version 3.0 - Se actualizaron las funciones obsoletas y corrigieron algunos errores.)
  *          (A partir de la version 3.1 - Se incluye la opcion de parametrizar las consultas.)
- *         
+ *          (A partir de la version 3.1.1 - Se Se modifico para que los parametros no contemplaran el parentesis de sierre, ademas de que en el
+ *          debug el valor de estos apareciera comentado)
+ *          (A partir de la version 3.1.2 - Se corrigio el error que no mostraba los errores generados en oracle.)
+ *
  * @package clase DB
  * @category Edicion
- *          
- *          
+ *
+ *
  * @link config/includes.php - Archivo con todos los includes del sistema
- *      
+ *
  */
 
 /*
@@ -27,10 +31,9 @@
  * por favor, incremente el siguiente contador como una advertencia para el
  * siguiente colega:
  *
- * totalHorasPerdidasAqui = 172
+ * totalHorasPerdidasAqui = 175
  *
  */
-
 class class_db
 {
 	/**
@@ -65,7 +68,7 @@ class class_db
 	 * Setear un email para enviar email cuando hay errores sql *
 	 */
 	public $emailAvisoErrorSql;
-
+	
 	/**
 	 * Parametros basicos necesarios para el funcionamiento de la clase
 	 *
@@ -75,13 +78,15 @@ class class_db
 	 *        	Usuario de conexion a la base
 	 * @param mixed $pass
 	 *        	Contraseña de conexion a la base
-	 * @param mixed $db        	
+	 * @param mixed $db
 	 * @param mixed $charset
 	 *        	Juego de caracteres de la conexion
 	 * @param mixed $dbtype
 	 *        	El tipo de DB (mysql, oracle o mssql)
+	 * @param bool $commit
+	 *        	true en caso de habilitar el autocommit y false para deshabilitarlo (por defecto en true)
 	 */
-	public function __construct($host, $user, $pass, $db, $charset = 'utf8', $dbtype = 'mysql')
+	public function __construct($host, $user, $pass, $db, $charset = 'utf8', $dbtype = 'mysql', $commit = true)
 	{
 		$this->dbtype = $dbtype;
 		$this->dbHost = $host;
@@ -89,33 +94,40 @@ class class_db
 		$this->dbPass = $pass;
 		$this->dbName = $db;
 		$this->charset = $charset;
+		$this->commit = $commit;
 	}
-
+	
 	/**
 	 * Realiza la coneccion a la base de datos
 	 * cambia la coneccion dependiendo de $dbtype
 	 */
 	public function connect()
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			$this->con = mysqli_connect ($this->dbHost, $this->dbUser, $this->dbPass) or die (mysqli_error ($this->con));
-			mysqli_select_db ($this->con, $this->dbName) or die (mysqli_error ($this->con));
+			$this->con = mysqli_connect($this->dbHost, $this->dbUser, $this->dbPass) or die(mysqli_error($this->con));
+			mysqli_select_db($this->con, $this->dbName) or die(mysqli_error($this->con));
+			
+			if($this->commit == false)
+			{
+				/* activar la autoconsigna */
+				mysqli_autocommit($this->con, FALSE);
+			}
 			// mysqli_set_charset ($this->con, $this->charset) or die (mysqli_error ($this->con));
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
 			// Conectar al servicio XE (es deicr, la base de datos) en la maquina "localhost"
 			
-			$this->con = oci_connect ($this->dbUser, $this->dbPass, $this->dbHost, $this->charset);
+			$this->con = oci_connect($this->dbUser, $this->dbPass, $this->dbHost, $this->charset);
 			
-			if (! $this->con)
+			if(!$this->con)
 			{
-				$e = oci_error ();
-				trigger_error (htmlentities ($e['message'], ENT_QUOTES), E_USER_ERROR);
+				$e = oci_error();
+				trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 			}
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
 			/**
 			 * Creamos la conexion con la base de datos SQLServer
@@ -125,79 +137,93 @@ class class_db
 			 */
 			
 			// Connect to MSSQL
-			$this->con = mssql_connect ($this->dbHost, $this->dbUser, $this->dbPass);
+			$this->con = mssql_connect($this->dbHost, $this->dbUser, $this->dbPass);
 			
-			if (! $this->con)
+			if(!$this->con)
 			{
-				die ('Algo fue mal mientras se conectaba a MSSQL');
+				die('Algo fue mal mientras se conectaba a MSSQL');
 			}
 			else
 			{
-				mssql_select_db ($this->dbName, $this->con);
+				mssql_select_db($this->dbName, $this->con);
 			}
 		}
 	}
-
+	
 	/**
 	 * Funcion que devuelve el codigo de error de la consulta
 	 *
 	 * @return string Con el codigo del error
 	 */
-	public function errorNro()
+	public function errorNro($result = "")
 	{
 		// Grabamos el codigo de error en una variable
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_errno ($this->con);
+			return mysqli_errno($this->con);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			$e = oci_error ($this->con);
-			return htmlentities ($e['code']);
+			if($result!="")
+			{
+				$e = oci_error($result);
+			}
+			else
+			{
+				$e = oci_error($this->con);
+			}
+			return htmlentities($e['code']);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
 			return "666";
 		}
 	}
-
+	
 	/**
 	 * Funcion que devuelve el texto del error de la consulta
 	 *
 	 * @return string Con el texto del error
 	 */
-	public function error()
+	public function error($result = "")
 	{
 		// Grabamos el codigo de error en una variable
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_error ($this->con);
+			return mysqli_error($this->con);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			$e = oci_error ($this->con);
-			return htmlentities ($e['message']);
+			if($result!="")
+			{
+				$e = oci_error($result);
+			}
+			else
+			{
+				$e = oci_error($this->con);
+			}
+			return htmlentities($e['message']);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_get_last_message ();
+			return mssql_get_last_message();
 		}
 	}
-
+	
 	/**
 	 *
 	 * @todo Funcion que se encarga de ejecutar las cunsultas SELECT
-	 *      
+	 *
 	 * @todo A tener en cuenta, por el momento se recomienda no usar texto entre comillas
 	 *       con el simbolo dos puntos ( : ) dentro de la consulta, por lo menos dentro de las consultas parametrizadas.
-	 *      
+	 *
 	 * @param string $str_query
 	 *        	codigo de la query a ejecutar
 	 * @param bool $esParam
 	 *        	Define si la consulta va a ser parametrizada o no. (por defecto false)
 	 * @param array $parametros
 	 *        	Array con los parametros a pasar.
-	 *        	
+	 *
 	 * @return unknown
 	 */
 	public function query($str_query, $esParam = false, $parametros = "")
@@ -210,132 +236,129 @@ class class_db
 		 */
 		$result = "";
 		
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			
-			$result = mysqli_query ($this->con, $str_query);
+			$result = mysqli_query($this->con, $str_query);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{ // Recuperamos los datos del estado del requerimiento
-			$result = oci_parse ($this->con, $str_query);
+			$result = oci_parse($this->con, $str_query);
 			
-			if ($esParam == true)
+			if($esParam == true)
 			{
-				$cantidad = substr_count ($str_query, ':');
+				$cantidad = substr_count($str_query, ':');
 				
-				$para = explode (':', $str_query);
+				$para = explode(':', $str_query);
 				
-				for($i = 0; $i < $cantidad; $i ++)
+				// 				print_r($para);
+				
+				for($i = 0; $i < $cantidad; $i++)
 				{
 					$e = $i + 1;
 					
-					$paraY = explode (' ', $para[$e]);
-
-
-					$paraY[0] = str_replace (")", "", $paraY[0]);
-					$paraY[0] = str_replace (";", "", $paraY[0]);
-					$paraY[0] = trim (str_replace (",", "", $paraY[0]));
+					$paraY = explode(' ', $para[$e]);
+					$paraY[0] = str_replace(")", "", $paraY[0]);
+					$paraY[0] = str_replace(";", "", $paraY[0]);
+					$paraY[0] = trim(str_replace(",", "", $paraY[0]));
 					
-					oci_bind_by_name ($result, ":$paraY[0]", $parametros[$i]);
+					// 					print_r($paraY[0]);
+					
+					oci_bind_by_name($result, ":$paraY[0]", $parametros[$i]);
+					// print_r($result.', ":'.$paraY[0].'", '.$parametros[$i]."<Br />");
 				}
 			}
 			
-			oci_execute ($result);
+			
+			if($this->commit == false)
+			{
+				oci_execute($result, OCI_NO_AUTO_COMMIT);
+			}
+			else
+			{
+				oci_execute($result);
+			}
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
 			// preguntamos si ese ususario ya esta registrado en la tabla
-			$result = mssql_query ($str_query, $this->con);
+			$result = mssql_query($str_query, $this->con);
 		}
 		
 		// Empezamos el debug de la consulta
-		if ($this->debug)
+		if($this->debug)
 		{
 			echo "<div style='background-color:#E8E8FF; padding:10px; margin:10px; font-family:Arial; font-size:11px; border:1px solid blue'>";
-			echo $this->format_query_imprimir ($str_query);
+			echo $this->format_query_imprimir($str_query);
 			
-			if ($esParam == true)
+			if($esParam == true)
 			{
-				echo "<Br /><Br />";
-				
-				if ($this->dbtype == 'mysql')
-				{
-				}
-				elseif ($this->dbtype == 'oracle')
-				{
-					
-					$para = explode (':', $str_query);
-					
-					for($i = 0; $i < $cantidad; $i ++)
-					{
-						$e = $i + 1;
-						
-						$paraY = explode (' ', $para[$e]);
-						
-						$paraY[0] = trim (str_replace (",", "", $paraY[0]));
-						
-						echo ":" . $paraY[0] . " = " . $parametros[$i] . "<Br />";
-					}
-				}
+				$this->imprimirParam($str_query, $parametros);
 			}
 			
 			echo "</div>";
 		}
 		
-		if (isset ($this->debugsql))
+		if(isset($this->debugsql))
 		{
-			consola ($str_query);
+			consola($str_query);
 		}
 		
-		if ($this->grabarArchivoLogQuery)
+		if($this->grabarArchivoLogQuery)
 		{
-			$str_log = date ("d/m/Y H:i:s") . " " . getenv ("REQUEST_URI") . "\n";
+			$str_log = date("d/m/Y H:i:s") . " " . getenv("REQUEST_URI") . "\n";
 			$str_log .= $str_query;
 			$str_log .= "\n------------------------------------------------------\n";
-			error_log ($str_log);
+			error_log($str_log);
 		}
 		
-		$errorNo = $this->errorNro ();
-		if ($errorNo != 0 and $errorNo != 1062)
+		$errorNo = $this->errorNro($result);
+		
+		if($errorNo != 0 and $errorNo != 1062)
 		{ // el error 1062 es "Duplicate entry"
-			if ($this->mostrarErrores)
+			if($this->mostrarErrores)
 			{
 				echo "<div style='background-color:#FFECEC; padding:10px; margin:10px; font-family:Arial; font-size:11px; border:1px solid red'>";
-				echo "<B>Error:</B> " . $this->error () . "<br><br>";
-				echo "<B>P&aacute;gina:</B> " . getenv ("REQUEST_URI") . "<br>";
-				echo "<br>" . $this->format_query_imprimir ($str_query);
+				echo "<B>Error:</B> " . $this->error($result) . "<br><br>";
+				echo "<B>P&aacute;gina:</B> " . getenv("REQUEST_URI") . "<br>";
+				echo "<br>" . $this->format_query_imprimir($str_query);
+				
+				if($esParam == true)
+				{
+					$this->imprimirParam($str_query, $parametros);
+				}
+				
 				echo "</div>";
 			}
 			else
 			{
 				echo "DB Error";
 			}
-			if ($this->dieOnError)
+			if($this->dieOnError)
 			{
-				die ("class_db die()");
+				die("class_db die()");
 			}
 			
-			if ($this->grabarArchivoLogError)
+			if($this->grabarArchivoLogError)
 			{
 				$str_log = "******************* ERROR ****************************\n";
-				$str_log .= date ("d/m/Y H:i:s") . " " . getenv ("REQUEST_URI") . "\n";
-				$str_log .= "IP del visitante: " . getenv ("REMOTE_ADDR") . "\n";
-				$str_log .= "Error: " . $this->error () . "\n";
+				$str_log .= date("d/m/Y H:i:s") . " " . getenv("REQUEST_URI") . "\n";
+				$str_log .= "IP del visitante: " . getenv("REMOTE_ADDR") . "\n";
+				$str_log .= "Error: " . $this->error() . "\n";
 				$str_log .= $str_query;
 				$str_log .= "\n------------------------------------------------------\n";
-				error_log ($str_log);
+				error_log($str_log);
 			}
 			
 			// envio de aviso de error
-			if ($this->emailAvisoErrorSql != "")
+			if($this->emailAvisoErrorSql != "")
 			{
-				@mail ($this->emailAvisoErrorSql, "Error MySQL", "Error: " . $this->error () . "\n\nP&aacute;gina:" . getenv ("REQUEST_URI") . "\n\nIP del visitante:" . getenv ("REMOTE_ADDR") . "\n\nQuery:" . $str_query);
+				@mail($this->emailAvisoErrorSql, "Error MySQL", "Error: " . $this->error() . "\n\nP&aacute;gina:" . getenv("REQUEST_URI") . "\n\nIP del visitante:" . getenv("REMOTE_ADDR") . "\n\nQuery:" . $str_query);
 			}
 		}
 		
 		return $result;
 	}
-
+	
 	/**
 	 * Devuelve el fetch_assoc de una consulta dada
 	 *
@@ -347,41 +370,41 @@ class class_db
 	 */
 	public function fetch_assoc($result, $limpiarEntidadesHTML = false)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (mysqli_fetch_assoc ($result));
+				return limpiarEntidadesHTML(mysqli_fetch_assoc($result));
 			}
 			else
 			{
-				return mysqli_fetch_assoc ($result);
+				return mysqli_fetch_assoc($result);
 			}
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (oci_fetch_assoc ($result));
+				return limpiarEntidadesHTML(oci_fetch_assoc($result));
 			}
 			else
 			{
-				return oci_fetch_assoc ($result);
+				return oci_fetch_assoc($result);
 			}
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (mssql_fetch_assoc ($result));
+				return limpiarEntidadesHTML(mssql_fetch_assoc($result));
 			}
 			else
 			{
-				return mssql_fetch_assoc ($result);
+				return mssql_fetch_assoc($result);
 			}
 		}
 	}
-
+	
 	/**
 	 * Devuelve el fetch_array de una consulta dada
 	 *
@@ -393,41 +416,41 @@ class class_db
 	 */
 	public function fetch_array($result, $limpiarEntidadesHTML = false)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (mysqli_fetch_array ($result));
+				return limpiarEntidadesHTML(mysqli_fetch_array($result));
 			}
 			else
 			{
-				return mysqli_fetch_array ($result);
+				return mysqli_fetch_array($result);
 			}
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (oci_fetch_array ($result));
+				return limpiarEntidadesHTML(oci_fetch_array($result));
 			}
 			else
 			{
-				return oci_fetch_array ($result);
+				return oci_fetch_array($result);
 			}
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (mssql_fetch_array ($result));
+				return limpiarEntidadesHTML(mssql_fetch_array($result));
 			}
 			else
 			{
-				return mssql_fetch_array ($result);
+				return mssql_fetch_array($result);
 			}
 		}
 	}
-
+	
 	/**
 	 * Devuelve el fetch_object de una consulta dada
 	 *
@@ -437,20 +460,20 @@ class class_db
 	 */
 	public function fetch_object($result)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_fetch_object ($result);
+			return mysqli_fetch_object($result);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_fetch_object ($result);
+			return oci_fetch_object($result);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_fetch_object ($result);
+			return mssql_fetch_object($result);
 		}
 	}
-
+	
 	/**
 	 * Devuelve la cantidad de filas de la consulta
 	 *
@@ -459,20 +482,20 @@ class class_db
 	 */
 	public function num_rows($result)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_num_rows ($result);
+			return mysqli_num_rows($result);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_fetch_all ($result, $res);
+			return oci_fetch_all($result, $res);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_num_rows ($result);
+			return mssql_num_rows($result);
 		}
 	}
-
+	
 	/**
 	 * Devuelve la cantidad de campos de la consulta
 	 *
@@ -481,39 +504,39 @@ class class_db
 	 */
 	public function num_fields($result)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_num_fields ($result);
+			return mysqli_num_fields($result);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_num_fields ($result);
+			return oci_num_fields($result);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_num_fields ($result);
+			return mssql_num_fields($result);
 		}
 	}
-
+	
 	/**
 	 * Devuelve el número de registros afectado por la última sentencia SQL de escritura
 	 */
-	public function affected_rows()
+	public function affected_rows($stid="")
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_affected_rows ($this->con);
+			return mysqli_affected_rows($this->con);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_num_rows ($this->con);
+			return oci_num_rows($stid);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_rows_affected ($this->con);
+			return mssql_rows_affected($this->con);
 		}
 	}
-
+	
 	/**
 	 * Obtiene el ultimo (o mayor) valor de id de una tabla determinada
 	 * en caso de tratarse de MySQL la ultima tabla con campo autoIncremental
@@ -526,41 +549,41 @@ class class_db
 	 */
 	public function insert_id($campoId, $tabla)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_insert_id ($this->con);
+			return mysqli_insert_id($this->con);
 		}
 		else
 		{
 			$sql = 'SELECT MAX(' . $campoId . ') ID FROM ' . $tabla;
 			
-			$result = $this->query ($sql);
+			$result = $this->query($sql);
 			
-			$id = $this->fetch_array ($result);
+			$id = $this->fetch_array($result);
 			
 			return $id['ID'];
 		}
 	}
-
+	
 	/**
 	 * Cierra las conecciones a la base de datos
 	 */
 	public function close()
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_close ($this->con);
+			return mysqli_close($this->con);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_close ($this->con);
+			return oci_close($this->con);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_close ($this->con);
+			return mssql_close($this->con);
 		}
 	}
-
+	
 	/**
 	 * Escapa los caracteres especiales de una cadena para usarla en una sentencia SQL,
 	 * tomando en cuenta el conjunto de caracteres actual de la conexion
@@ -572,11 +595,11 @@ class class_db
 	{
 		// print_r($this->con." - ".$string);
 		// return mysqli_real_escape_string ($this->con, $string);
-		return addslashes ($string);
+		return addslashes($string);
 		
 		// exit ("db".$string);
 	}
-
+	
 	/**
 	 * Formatea una query para su visualizacion por pantalla
 	 *
@@ -586,21 +609,31 @@ class class_db
 	 */
 	private function format_query_imprimir($str_query)
 	{
-		$str_query_debug = nl2br (htmlentities ($str_query));
-		$str_query_debug = str_replace ("SELECT", "<span style='color:green;font-weight:bold;'>SELECT</span>", $str_query_debug);
-		$str_query_debug = str_replace ("INSERT", "<span style='color:#660000;font-weight:bold;'>INSERT</span>", $str_query_debug);
-		$str_query_debug = str_replace ("UPDATE", "<span style='color:#FF6600;font-weight:bold;'>UPDATE</span>", $str_query_debug);
-		$str_query_debug = str_replace ("REPLACE", "<span style='color:#FF6600;font-weight:bold;'>UPDATE</span>", $str_query_debug);
-		$str_query_debug = str_replace ("DELETE", "<span style='color:#CC0000;font-weight:bold;'>DELETE</span>", $str_query_debug);
-		$str_query_debug = str_replace ("FROM", "<br/><B>FROM</B>", $str_query_debug);
-		$str_query_debug = str_replace ("WHERE", "<br/><B>WHERE</B>", $str_query_debug);
-		$str_query_debug = str_replace ("ORDER BY", "<br/><B>ORDER BY</B>", $str_query_debug);
-		$str_query_debug = str_replace ("GROUP BY", "<br/><B>GROUP BY</B>", $str_query_debug);
-		$str_query_debug = str_replace ("INTO", "<br/><B>INTO</B>", $str_query_debug);
-		$str_query_debug = str_replace ("VALUES", "<br/><B>VALUES</B>", $str_query_debug);
+		$str_query_debug = nl2br(htmlentities($str_query));
+		$str_query_debug = str_replace("SELECT", "<span style='color:green;font-weight:bold;'>SELECT</span>", $str_query_debug);
+		$str_query_debug = str_replace("INSERT", "<span style='color:#660000;font-weight:bold;'>INSERT</span>", $str_query_debug);
+		$str_query_debug = str_replace("UPDATE", "<span style='color:#FF6600;font-weight:bold;'>UPDATE</span>", $str_query_debug);
+		$str_query_debug = str_replace("REPLACE", "<span style='color:#FF6600;font-weight:bold;'>UPDATE</span>", $str_query_debug);
+		$str_query_debug = str_replace("DELETE", "<span style='color:#CC0000;font-weight:bold;'>DELETE</span>", $str_query_debug);
+		$str_query_debug = str_replace("FROM", "<br/><B>FROM</B>", $str_query_debug);
+		$str_query_debug = str_replace("WHERE", "<br/><B>WHERE</B>", $str_query_debug);
+		$str_query_debug = str_replace("ORDER BY", "<br/><B>ORDER BY</B>", $str_query_debug);
+		$str_query_debug = str_replace("GROUP BY", "<br/><B>GROUP BY</B>", $str_query_debug);
+		$str_query_debug = str_replace("INTO", "<br/><B>INTO</B>", $str_query_debug);
+		$str_query_debug = str_replace("VALUES", "<br/><B>VALUES</B>", $str_query_debug);
+		$str_query_debug = str_replace(" AND ", "<B> AND </B>", $str_query_debug);
+		
+		$str_query_debug = str_replace(" AS ", "<span style='color:magenta;font-weight:bold;'> AS </span>", $str_query_debug);
+		$str_query_debug = str_replace("INNER", "<br/><span style='color:magenta;font-weight:bold;'>INNER</span>", $str_query_debug);
+		$str_query_debug = str_replace("LEFT", "<br/><span style='color:magenta;font-weight:bold;'>LEFT</span>", $str_query_debug);
+		$str_query_debug = str_replace("RIGHT", "<br/><span style='color:magenta;font-weight:bold;'>RIGHT</span>", $str_query_debug);
+		$str_query_debug = str_replace("FULL", "<br/><span style='color:magenta;font-weight:bold;'>FULL</span>", $str_query_debug);
+		$str_query_debug = str_replace("JOIN", "<span style='color:magenta;font-weight:bold;'>JOIN</span>", $str_query_debug);
+		$str_query_debug = str_replace(" ON ", "<span style='color:magenta;font-weight:bold;'> ON </span>", $str_query_debug);
+		
 		return $str_query_debug;
 	}
-
+	
 	/**
 	 * Obtiene el valor de un campo de una tabla.
 	 * Si no obtiene una sola fila retorna FALSE
@@ -618,15 +651,15 @@ class class_db
 	public function getValue($table, $field, $id, $fieldId = "id")
 	{
 		$sql = "SELECT $field FROM $table WHERE $fieldId='$id'";
-		$result = query ($sql);
+		$result = query($sql);
 		
-		if ($result and num_rows ($result) == 1)
+		if($result and num_rows($result) == 1)
 		{
-			if ($fila = fetch_assoc ($result))
+			if($fila = fetch_assoc($result))
 			{
-				if ($this->dbtype == 'oracle')
+				if($this->dbtype == 'oracle')
 				{
-					return $fila[strtoupper ($field)];
+					return $fila[strtoupper($field)];
 				}
 				else
 				{
@@ -639,7 +672,7 @@ class class_db
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Obtiene una fila de una tabla.
 	 * Si no obtiene una sola fila retorna FALSE
@@ -655,17 +688,17 @@ class class_db
 	public function getRow($table, $id, $fieldId = "id", $limpiarEntidadesHTML = false)
 	{
 		$sql = "SELECT * FROM $table WHERE $fieldId='$id'";
-		$result = query ($sql);
+		$result = query($sql);
 		
-		if ($result and num_rows ($result) == 1)
+		if($result and num_rows($result) == 1)
 		{
-			if ($limpiarEntidadesHTML)
+			if($limpiarEntidadesHTML)
 			{
-				return limpiarEntidadesHTML (fetch_array ($result));
+				return limpiarEntidadesHTML(fetch_array($result));
 			}
 			else
 			{
-				return fetch_array ($result);
+				return fetch_array($result);
 			}
 		}
 		else
@@ -673,7 +706,7 @@ class class_db
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Retorna un array con el arbol jerarquico a partir del nodo indicado (0 si es el root)
 	 * Esta funcion es para ser usada en tablas con este formato de campos: id, valor, idPadre
@@ -693,41 +726,41 @@ class class_db
 	 * @param int $nivel
 	 *        	No enviar (es unicamente para recursividad)
 	 * @return array Formato: array("nivel" => X, "dato" => X, "id" => X, "padreId" => X);
-	 *        
+	 *
 	 *         Un codigo de ejemplo para hacer un arbol de categorias con links:
-	 *        
+	 *
 	 *         for ($i=0; $i<count($arbol); $i++){
 	 *         echo str_repeat("&nbsp;&nbsp;&nbsp;", $arbol[$i][nivel])."<a href='admin_categorias.php?c=".$arbol[$i][id]."'>".$arbol[$i][dato]."</a><br/>";
 	 *         }
 	 */
 	public function getArbol($tabla, $campoId, $campoPadreId, $campoDato, $orderBy, $padreId = 0, $nivel = 0)
 	{
-		$tabla = real_escape_string ($tabla);
-		$campoId = real_escape_string ($campoId);
-		$campoPadreId = real_escape_string ($campoPadreId);
-		$campoDato = real_escape_string ($campoDato);
-		$orderBy = real_escape_string ($orderBy);
-		$padreId = real_escape_string ($padreId);
+		$tabla = real_escape_string($tabla);
+		$campoId = real_escape_string($campoId);
+		$campoPadreId = real_escape_string($campoPadreId);
+		$campoDato = real_escape_string($campoDato);
+		$orderBy = real_escape_string($orderBy);
+		$padreId = real_escape_string($padreId);
 		
-		$result = $this->query ("SELECT * FROM $tabla WHERE $campoPadreId='$padreId' ORDER BY $orderBy");
+		$result = $this->query("SELECT * FROM $tabla WHERE $campoPadreId='$padreId' ORDER BY $orderBy");
 		
 		$arrayRuta = array ();
 		
-		while ($fila = $this->fetch_array ($result))
+		while($fila = $this->fetch_array($result))
 		{
 			$arrayRuta[] = array (
 					"nivel" => $nivel,
 					"dato" => $fila[$campoDato],
 					"id" => $fila[$campoId],
-					"padreId" => $fila[$campoPadreId] 
+					"padreId" => $fila[$campoPadreId]
 			);
-			$retArrayFunc = $this->getArbol ($tabla, $campoId, $campoPadreId, $campoDato, $orderBy, $fila[$campoId], $nivel + 1);
-			$arrayRuta = array_merge ($arrayRuta, $retArrayFunc);
+			$retArrayFunc = $this->getArbol($tabla, $campoId, $campoPadreId, $campoDato, $orderBy, $fila[$campoId], $nivel + 1);
+			$arrayRuta = array_merge($arrayRuta, $retArrayFunc);
 		}
 		
 		return $arrayRuta;
 	}
-
+	
 	/**
 	 * Retorna un array con la ruta tomada de un arbol jerarquico a partir del nodo indicado en $id.
 	 * Ej: array("33"=>"Autos", "74"=>"Ford", "85"=>"Falcon")
@@ -747,31 +780,31 @@ class class_db
 	 */
 	public function getArbolRuta($tabla, $campoId, $campoPadreId, $campoDato, $id)
 	{
-		$tabla = real_escape_string ($tabla);
-		$campoId = real_escape_string ($campoId);
-		$campoPadreId = real_escape_string ($campoPadreId);
-		$campoDato = real_escape_string ($campoDato);
-		$id = real_escape_string ($id);
+		$tabla = real_escape_string($tabla);
+		$campoId = real_escape_string($campoId);
+		$campoPadreId = real_escape_string($campoPadreId);
+		$campoDato = real_escape_string($campoDato);
+		$id = real_escape_string($id);
 		
-		if ($id == 0)
+		if($id == 0)
 			return;
-		
-		$arrayRuta = array ();
-		
-		$result = $this->query ("SELECT $campoId, $campoDato, $campoPadreId FROM $tabla WHERE $campoId='$id'");
-		
-		while ($this->num_rows ($result) == 1 or $fila[$campoId] == '0')
-		{
-			$fila = $this->fetch_assoc ($result);
-			$arrayRuta[$fila[$campoId]] = $fila[$campoDato];
-			$result = $this->query ("SELECT $campoId, $campoDato, $campoPadreId FROM $tabla WHERE $campoId='" . $fila[$campoPadreId] . "'");
-		}
-		
-		$arrayRuta = array_reverse ($arrayRuta, true);
-		
-		return $arrayRuta;
+			
+			$arrayRuta = array ();
+			
+			$result = $this->query("SELECT $campoId, $campoDato, $campoPadreId FROM $tabla WHERE $campoId='$id'");
+			
+			while($this->num_rows($result) == 1 or $fila[$campoId] == '0')
+			{
+				$fila = $this->fetch_assoc($result);
+				$arrayRuta[$fila[$campoId]] = $fila[$campoDato];
+				$result = $this->query("SELECT $campoId, $campoDato, $campoPadreId FROM $tabla WHERE $campoId='" . $fila[$campoPadreId] . "'");
+			}
+			
+			$arrayRuta = array_reverse($arrayRuta, true);
+			
+			return $arrayRuta;
 	}
-
+	
 	/**
 	 * Realiza un INSERT en una tabla usando los datos que vienen por POST, donde el nombre de cada campo es igual al nombre en la tabla.
 	 * Esto es especialmente util para backends, donde con solo agregar un campo al <form> ya estamos agregandolo al query automaticamente
@@ -799,44 +832,44 @@ class class_db
 	{
 		
 		// campos de $_POST
-		foreach ($_POST as $campo => $valor)
+		foreach($_POST as $campo => $valor)
 		{
-			if (is_array ($campos) and count ($campos) > 0)
+			if(is_array($campos) and count($campos) > 0)
 			{
 				// solo los campos indicados
-				if (in_array ($campo, $campos))
+				if(in_array($campo, $campos))
 				{
-					if ($camposInsert != "")
+					if($camposInsert != "")
 					{
 						$camposInsert .= ", ";
 					}
-					$camposInsert .= "`$campo`='" . real_escape_string ($valor) . "'";
+					$camposInsert .= "`$campo`='" . real_escape_string($valor) . "'";
 				}
 			}
 			else
 			{
 				// van todos los campos que vengan en $_POST
-				if ($camposInsert != "")
+				if($camposInsert != "")
 				{
 					$camposInsert .= ", ";
 				}
-				$camposInsert .= "`$campo`='" . real_escape_string ($valor) . "'";
+				$camposInsert .= "`$campo`='" . real_escape_string($valor) . "'";
 			}
 		}
 		
 		// campos adicionales
-		if ($adicionales != "")
+		if($adicionales != "")
 		{
-			if ($camposInsert != "")
+			if($camposInsert != "")
 			{
 				$camposInsert .= ", ";
 			}
 			$camposInsert .= $adicionales;
 		}
 		
-		return $this->query ("INSERT INTO $tabla SET $camposInsert");
+		return $this->query("INSERT INTO $tabla SET $camposInsert");
 	}
-
+	
 	/**
 	 * Realiza un UPDATE en una tabla usando los datos que vienen por POST, donde el nombre de cada campo es igual al nombre en la tabla.
 	 * Esto es especialmente util para backends, donde con solo agregar un campo al <form> ya estamos agregandolo al query automaticamente
@@ -866,70 +899,155 @@ class class_db
 	{
 		
 		// campos de $_POST
-		foreach ($_POST as $campo => $valor)
+		foreach($_POST as $campo => $valor)
 		{
-			if (is_array ($campos) and count ($campos) > 0)
+			if(is_array($campos) and count($campos) > 0)
 			{
 				// solo los campos indicados
-				if (in_array ($campo, $campos))
+				if(in_array($campo, $campos))
 				{
-					if ($camposInsert != "")
+					if($camposInsert != "")
 						$camposInsert .= ", ";
-					$camposInsert .= "`$campo`='" . real_escape_string ($valor) . "'";
+						$camposInsert .= "`$campo`='" . real_escape_string($valor) . "'";
 				}
 			}
 			else
 			{
 				// van todos los campos que vengan en $_POST
-				if ($camposInsert != "")
+				if($camposInsert != "")
 					$camposInsert .= ", ";
-				$camposInsert .= "`$campo`='" . real_escape_string ($valor) . "'";
+					$camposInsert .= "`$campo`='" . real_escape_string($valor) . "'";
 			}
 		}
 		
 		// campos adicionales
-		if ($adicionales != "")
+		if($adicionales != "")
 		{
-			if ($camposInsert != "")
+			if($camposInsert != "")
 				$camposInsert .= ", ";
-			$camposInsert .= $adicionales;
+				$camposInsert .= $adicionales;
 		}
 		
-		return $this->query ("UPDATE $tabla SET $camposInsert WHERE $where");
+		return $this->query("UPDATE $tabla SET $camposInsert WHERE $where");
 	}
-
+	
+	/**
+	 * Imprime los parametros pasados a la consulta
+	 *
+	 * @param unknown $str_query - Consulta
+	 * @param array $parametros - Parametros pasados
+	 */
+	private function imprimirParam($str_query, $parametros)
+	{
+		echo "<Br /><Br />";
+		
+		if($this->dbtype == 'mysql')
+		{
+		}
+		elseif($this->dbtype == 'oracle')
+		{
+			$cantidad = substr_count($str_query, ':');
+			
+			$para = explode(':', $str_query);
+			
+			for($i = 0; $i < $cantidad; $i++)
+			{
+				$e = $i + 1;
+				
+				$paraY = explode(' ', $para[$e]);
+				
+				$paraY[0] = trim(str_replace(",", "", $paraY[0]));
+				
+				$paraY[0] = str_replace(")", "", $paraY[0]);
+				
+				echo "-- :" . $paraY[0] . " = " . $parametros[$i] . "<Br />";
+			}
+		}
+	}
+	
 	/**
 	 * Devuelve el valor de un campo de la fila obtenida
 	 *
-	 * @param unknown $result        	
-	 * @param unknown $row        	
-	 * @param string $field        	
+	 * @param unknown $result
+	 * @param unknown $row
+	 * @param string $field
 	 */
 	public function result($result, $row, $field = null)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_result ($result, $row, $field);
+			return mysqli_result($result, $row, $field);
 		}
-		elseif ($this->dbtype == 'oracle')
+		elseif($this->dbtype == 'oracle')
 		{
-			return oci_result ($result, $field);
+			return oci_result($result, $field);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_result ($result, $row, $field);
+			return mssql_result($result, $row, $field);
 		}
 	}
-
+	
 	public function data_seek($result, $row_number)
 	{
-		if ($this->dbtype == 'mysql')
+		if($this->dbtype == 'mysql')
 		{
-			return mysqli_data_seek ($result, $row_number);
+			return mysqli_data_seek($result, $row_number);
 		}
-		elseif ($this->dbtype == 'mssql')
+		elseif($this->dbtype == 'mssql')
 		{
-			return mssql_data_seek ($result, $row_number);
+			return mssql_data_seek($result, $row_number);
+		}
+	}
+	
+	/**
+	 * Realiza el commit en caso de que el autocommit este off
+	 */
+	public function commit()
+	{
+		if($this->dbtype == 'mysql')
+		{
+			$r = mysqli_commit($this->con);
+			if(!$r)
+			{
+				$e = mysqli_error($this->con);
+				trigger_error(htmlentities($e['message']), E_USER_ERROR);
+			}
+		}
+		elseif($this->dbtype == 'oracle')
+		{
+			$r = oci_commit($this->con);
+			if(!$r)
+			{
+				$e = oci_error($this->con);
+				trigger_error(htmlentities($e['message']), E_USER_ERROR);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Realiza el rollback en caso de que el autocommit este off
+	 */
+	public function rollback()
+	{
+		if($this->dbtype == 'mysql')
+		{
+			$r = mysqli_rollback($this->con);
+			if(!$r)
+			{
+				$e = mysqli_error($this->con);
+				trigger_error(htmlentities($e['message']), E_USER_ERROR);
+			}
+		}
+		elseif($this->dbtype == 'oracle')
+		{
+			$r = oci_rollback($this->con);
+			if(!$r)
+			{
+				$e = oci_error($this->con);
+				trigger_error(htmlentities($e['message']), E_USER_ERROR);
+			}
 		}
 	}
 }
